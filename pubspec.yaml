@@ -4,16 +4,16 @@ environment:
   sdk: ^3.7.0-0
 
 workspace:
-  - flutter
-  - flutter/test_private
-  - flutter/test_private/test
-  - flutter_driver
-  - flutter_goldens
-  - flutter_localizations
-  - flutter_test
-  - flutter_web_plugins
-  - fuchsia_remote_debug_protocol
-  - integration_test
+  - packages/flutter
+  - packages/flutter/test_private
+  - packages/flutter/test_private/test
+  - packages/flutter_driver
+  - packages/flutter_goldens
+  - packages/flutter_localizations
+  - packages/flutter_test
+  - packages/flutter_web_plugins
+  - packages/fuchsia_remote_debug_protocol
+  - packages/integration_test
 
 dependencies:
   args: 2.7.0
