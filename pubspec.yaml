@@ -66,6 +66,16 @@ workspace:
   - dev/benchmarks/imitation_game_flutter
   - dev/benchmarks/test_apps/stocks
   - dev/a11y_assessments
+  - examples/image_list
+  - examples/platform_channel
+  - examples/layers
+  - examples/hello_world
+  - examples/platform_view
+  - examples/platform_channel_swift
+  - examples/flutter_view
+  - examples/texture
+  - examples/api
+  - examples/splash
 
 dependencies:
   _discoveryapis_commons: 1.0.7
