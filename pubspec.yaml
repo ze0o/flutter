@@ -14,6 +14,8 @@ workspace:
   - packages/flutter_web_plugins
   - packages/fuchsia_remote_debug_protocol
   - packages/integration_test
+  - packages/integration_test/example
+  - packages/integration_test/integration_test_macos
   - dev/devicelab
   - dev/manual_tests
   - dev/missing_dependency_tests
@@ -211,5 +213,6 @@ dev_dependencies:
   file_testing: 3.0.2
   flutter_lints: 5.0.0
   lints: 5.1.1
+  pedantic: 1.11.1
   quiver: 3.2.2
   yaml_edit: 2.2.2
