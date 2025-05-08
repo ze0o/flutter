@@ -175,10 +175,12 @@ class UpdatePackagesCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
-    final List<Directory> packages = [
-      ...runner!.getRepoPackages(),
-      globals.fs.directory(globals.fs.path.absolute(Cache.flutterRoot!)),
-    ];
+    // Add the root directory to the list of packages, to capture the workspace
+    // `pubspec.yaml`.
+    final Directory rootDirectory = globals.fs.directory(
+      globals.fs.path.absolute(Cache.flutterRoot!),
+    );
+    final List<Directory> packages = <Directory>[...runner!.getRepoPackages(), rootDirectory];
 
     final bool forceUpgrade = boolArg('force-upgrade');
     final bool isPrintPaths = boolArg('paths');
