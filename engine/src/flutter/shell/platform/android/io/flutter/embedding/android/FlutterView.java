@@ -7,7 +7,6 @@ package io.flutter.embedding.android;
 import static io.flutter.Build.API_LEVELS;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -109,6 +108,7 @@ import java.util.Set;
 public class FlutterView extends FrameLayout
     implements MouseCursorPlugin.MouseCursorViewDelegate, KeyboardManager.ViewDelegate {
   private static final String TAG = "FlutterView";
+  private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
 
   // Internal view hierarchy references.
   @Nullable private FlutterSurfaceView flutterSurfaceView;
@@ -536,7 +536,7 @@ public class FlutterView extends FrameLayout
    * Refresh {@link androidx.window.layout.WindowInfoTracker} and {@link android.view.DisplayCutout}
    * display features. Fold, hinge and cutout areas are populated here.
    */
-  @TargetApi(API_LEVELS.API_28)
+  @RequiresApi(API_LEVELS.API_28)
   protected void setWindowInfoListenerDisplayFeatures(WindowLayoutInfo layoutInfo) {
     List<DisplayFeature> newDisplayFeatures = layoutInfo.getDisplayFeatures();
     List<FlutterRenderer.DisplayFeature> flutterDisplayFeatures = new ArrayList<>();
@@ -1047,7 +1047,6 @@ public class FlutterView extends FrameLayout
 
   // -------- Start: Mouse -------
   @Override
-  @TargetApi(API_LEVELS.API_24)
   @RequiresApi(API_LEVELS.API_24)
   @NonNull
   public PointerIcon getSystemPointerIcon(int type) {
@@ -1445,13 +1444,14 @@ public class FlutterView extends FrameLayout
       if (Build.VERSION.SDK_INT >= API_LEVELS.API_31) {
         List<SpellCheckerInfo> enabledSpellCheckerInfos =
             textServicesManager.getEnabledSpellCheckerInfos();
-        boolean gboardSpellCheckerEnabled =
-            enabledSpellCheckerInfos.stream()
-                .anyMatch(
-                    spellCheckerInfo ->
-                        spellCheckerInfo
-                            .getPackageName()
-                            .equals("com.google.android.inputmethod.latin"));
+        boolean gboardSpellCheckerEnabled = false;
+
+        for (SpellCheckerInfo spellCheckerInfo : enabledSpellCheckerInfos) {
+          if (spellCheckerInfo.getPackageName().equals(GBOARD_PACKAGE_NAME)) {
+            gboardSpellCheckerEnabled = true;
+            break;
+          }
+        }
 
         // Checks if enabled spell checker is the one that is suppported by Gboard, which is
         // the one Flutter supports by default.

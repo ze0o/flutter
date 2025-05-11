@@ -80,6 +80,7 @@ final List<GradleHandledError> gradleErrors = <GradleHandledError>[
   incompatibleCompileSdk35AndAgpVersionHandler,
   usageOfV1EmbeddingReferencesHandler,
   jlinkErrorWithJava21AndSourceCompatibility,
+  missingNdkSourcePropertiesFile,
   incompatibleKotlinVersionHandler, // This handler should always be last, as its key log output is sometimes in error messages with other root causes.
 ];
 
@@ -296,7 +297,7 @@ final GradleHandledError flavorUndefinedHandler = GradleHandledError(
 );
 
 final RegExp _minSdkVersionPattern = RegExp(
-  r'uses-sdk:minSdkVersion ([0-9]+) cannot be smaller than version ([0-9]+) declared in library \[\:(.+)\]',
+  r'uses-sdk:minSdkVersion ([0-9]+) cannot be smaller than version ([0-9]+) declared in library \[:(.+)\]',
 );
 
 /// Handler when a plugin requires a higher Android API level.
@@ -577,9 +578,7 @@ final GradleHandledError incompatibleJavaAndGradleVersionsHandler = GradleHandle
     globals.printBox(
       "${globals.logger.terminal.warningMark} Your project's Gradle version "
       'is incompatible with the Java version that Flutter is using for Gradle.\n\n'
-      'If you recently upgraded Android Studio, consult the migration guide '
-      'at https://flutter.dev/to/java-gradle-incompatibility.\n\n'
-      'Otherwise, to fix this issue, first, check the Java version used by Flutter by '
+      'To fix this issue, first, check the Java version used by Flutter by '
       'running `flutter doctor --verbose`.\n\n'
       'Then, update the Gradle version specified in ${gradlePropertiesFile.path} '
       'to be compatible with that Java version. '
@@ -728,4 +727,28 @@ https://github.com/flutter/flutter/issues/156304''', title: _boxTitle);
     return GradleBuildStatus.exit;
   },
   eventLabel: 'java21-and-source-compatibility',
+);
+
+final RegExp _missingNdkSourcePropertiesRegexp = RegExp(
+  r'NDK at ((?:/|[a-zA-Z]:\\).+?) did not have a source\.properties file',
+  multiLine: true,
+);
+
+@visibleForTesting
+final GradleHandledError missingNdkSourcePropertiesFile = GradleHandledError(
+  test: (String line) => _missingNdkSourcePropertiesRegexp.hasMatch(line),
+  handler: ({
+    required String line,
+    required FlutterProject project,
+    required bool usesAndroidX,
+  }) async {
+    final String path = _missingNdkSourcePropertiesRegexp.firstMatch(line)!.group(1)!;
+    globals.printBox('''
+    ${globals.logger.terminal.warningMark} This is likely due to a malformed download of the NDK.
+    This can be fixed by deleting the local NDK copy at: $path
+    and allowing the Android Gradle Plugin to automatically re-download it.
+    ''', title: _boxTitle);
+    return GradleBuildStatus.exit;
+  },
+  eventLabel: 'ndk-missing-source-properties-file',
 );
